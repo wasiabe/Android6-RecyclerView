@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements ImageRequester.Im
     mRecyclerView.setAdapter(mAdapter);
 
     setRecyclerViewScrollListener();
+    setRecyclerViewItemTouchListener();
   }
 
   @Override
@@ -115,6 +116,29 @@ public class MainActivity extends AppCompatActivity implements ImageRequester.Im
         }
       }
     });
+  }
+  private void setRecyclerViewItemTouchListener() {
+
+    //1
+    ItemTouchHelper.SimpleCallback itemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+      @Override
+      public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder viewHolder1) {
+        //2
+        return false;
+      }
+
+      @Override
+      public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+        //3
+        int position = viewHolder.getAdapterPosition();
+        mPhotosList.remove(position);
+        mRecyclerView.getAdapter().notifyItemRemoved(position);
+      }
+    };
+
+    //4
+    ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchCallback);
+    itemTouchHelper.attachToRecyclerView(mRecyclerView);
   }
 
   private void requestPhoto() {
