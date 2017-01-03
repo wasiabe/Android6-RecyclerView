@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements ImageRequester.Im
 
   private RecyclerView mRecyclerView;
   private LinearLayoutManager mLinearLayoutManager;
+  private GridLayoutManager mGridLayoutManager;
   private RecyclerAdapter mAdapter;
   private ArrayList<Photo> mPhotosList;
   private ImageRequester mImageRequester;
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements ImageRequester.Im
 
     mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
     mLinearLayoutManager = new LinearLayoutManager(this);
+    mGridLayoutManager = new GridLayoutManager(this, 2);
     mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
     mPhotosList = new ArrayList<>();
@@ -81,8 +83,25 @@ public class MainActivity extends AppCompatActivity implements ImageRequester.Im
     }
   }
 
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.getItemId() == R.id.action_change_recycler_manager) {
+      changeLayoutManager();
+      return true;
+    }
+    return super.onOptionsItemSelected(item);
+  }
+
   private int getLastVisibleItemPosition() {
-    return mLinearLayoutManager.findLastVisibleItemPosition();
+    int itemCount;
+
+    if (mRecyclerView.getLayoutManager().equals(mLinearLayoutManager)) {
+      itemCount = mLinearLayoutManager.findLastVisibleItemPosition();
+    } else {
+      itemCount = mGridLayoutManager.findLastVisibleItemPosition();
+    }
+
+    return itemCount;
   }
 
   private void setRecyclerViewScrollListener() {
@@ -117,5 +136,19 @@ public class MainActivity extends AppCompatActivity implements ImageRequester.Im
         mAdapter.notifyItemInserted(mPhotosList.size());
       }
     });
+  }
+
+  private void changeLayoutManager() {
+    if (mRecyclerView.getLayoutManager().equals(mLinearLayoutManager)) {
+      //1
+      mRecyclerView.setLayoutManager(mGridLayoutManager);
+      //2
+      if (mPhotosList.size() == 1) {
+        requestPhoto();
+      }
+    } else {
+      //3
+      mRecyclerView.setLayoutManager(mLinearLayoutManager);
+    }
   }
 }
